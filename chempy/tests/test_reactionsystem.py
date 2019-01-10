@@ -170,6 +170,16 @@ def test_ReactionSystem__add():
     rs7 = rs6 + (Reaction.from_string("H+ + H2O -> H3O+"),)
     assert len(rs7.rxns) == 4
 
+    stncs = H2O, Hp, OHm = Substance(name='H2O', charge=0, data={'pKa': 14}), Substance('H+'), Substance('OH-')
+    r = Reaction({'H+': 1, 'OH-': 1}, {'H2O': 1})
+    rs1 = ReactionSystem([r], stncs)
+    assert rs1.substances['H2O'].data['pKa'] == 14
+    rs2 = ReactionSystem.from_string("H2O -> H+ + OH-")
+    assert not 'pKa' in rs2.substances['H2O'].data
+    assert (rs1 + rs2).substances['H2O'].data['pKa'] == 14
+    rs1 += rs2
+    assert rs2.substances['H2O'].data['pKa'] == 14
+
 
 @requires(parsing_library)
 def test_ReactionSystem__from_string():

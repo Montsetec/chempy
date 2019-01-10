@@ -386,12 +386,13 @@ class ReactionSystem(object):
         return self.__class__(new_rxns, substances=new_substances, checks=checks)
 
     def __iadd__(self, other):
-        try:
-            self.substances.update(other.substances)
-        except AttributeError:
-            self.rxns.extend(other)
-        else:
+        if isinstance(other, self.__class__):
+            for k, v in other.substances.items():
+                if k not in self.substances:
+                    self.substances[k] = v
             self.rxns.extend(other.rxns)
+        else:
+            self.rxns.extend(other)
         return self
 
     def __add__(self, other):
